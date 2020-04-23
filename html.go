@@ -5,17 +5,17 @@ import (
 	"github.com/pkg/errors"
 )
 
-type HtmlRequester interface {
+// HTMLRequester can fetch the target HTML page
+type HTMLRequester interface {
 	fetchHTML(string) (string, error)
 }
 
-// Crawler can fetch the target HTML page
 type htmlrequester struct {
 	config Configuration
 }
 
-// NewCrawler returns a crawler object initialised with the URL and the [optional] raw HTML body
-func NewHtmlRequester(config Configuration) HtmlRequester {
+// NewHTMLRequester returns a crawler object initialised with the URL and the [optional] raw HTML body
+func NewHTMLRequester(config Configuration) HTMLRequester {
 	return htmlrequester{
 		config: config,
 	}
@@ -23,10 +23,12 @@ func NewHtmlRequester(config Configuration) HtmlRequester {
 
 func (hr htmlrequester) fetchHTML(url string) (string, error) {
 	client := resty.New()
-	client.SetTimeout(hr.config.timeout)
-	resp, err := client.R().
+	client.SetTimeout(hr.config.Timeout)
+	resp, err := client.
+		SetCookies(hr.config.Cookies).
+		R().
 		SetHeader("Content-Type", "application/json").
-		SetHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30").
+		SetHeader("User-Agent", hr.config.BrowserUserAgent).
 		Get(url)
 
 	if err != nil {

@@ -10,18 +10,25 @@ type Goose struct {
 }
 
 // New returns a new instance of the article extractor
-func New(args ...string) Goose {
+func New(config Configuration) Goose {
 	return Goose{
-		config: GetDefaultConfiguration(args...),
+		config: config,
+	}
+}
+
+// NewWithDefaults returns a new instance of the article extractor with default configuration settings
+func NewWithDefaults() Goose {
+	return Goose{
+		config: GetDefaultConfiguration(),
 	}
 }
 
 // ExtractFromURL follows the URL, fetches the HTML page and returns an article object
 func (g Goose) ExtractFromURL(url string) (*Article, error) {
-	HtmlRequester := NewHtmlRequester(g.config)
-	html, err := HtmlRequester.fetchHTML(url)
+	HTMLRequester := NewHTMLRequester(g.config)
+	html, err := HTMLRequester.fetchHTML(url)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not get htnk from site")
+		return nil, errors.Wrap(err, "could not get HTML from site")
 	}
 	cc := NewCrawler(g.config)
 	return cc.Crawl(html, url)

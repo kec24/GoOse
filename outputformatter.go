@@ -21,10 +21,10 @@ type outputFormatter struct {
 }
 
 func (formatter *outputFormatter) getLanguage(lang string) string {
-	if formatter.config.useMetaLanguage && "" != lang {
+	if formatter.config.UseMetaLanguage && "" != lang {
 		return lang
 	}
-	return formatter.config.targetLanguage
+	return formatter.config.TargetLanguage
 }
 
 func (formatter *outputFormatter) getTopNode() *goquery.Selection {
@@ -35,7 +35,7 @@ func (formatter *outputFormatter) getFormattedText(topNode *goquery.Selection, l
 	formatter.topNode = topNode
 	formatter.language = formatter.getLanguage(lang)
 	if formatter.language == "" {
-		formatter.language = formatter.config.targetLanguage
+		formatter.language = formatter.config.TargetLanguage
 	}
 	formatter.removeNegativescoresNodes()
 	links = formatter.linksToText()
@@ -171,7 +171,7 @@ func (formatter *outputFormatter) removeParagraphsWithFewWords() {
 	}
 	allNodes := formatter.topNode.Children()
 	allNodes.Each(func(i int, s *goquery.Selection) {
-		sw := formatter.config.stopWords.stopWordsCount(language, s.Text())
+		sw := formatter.config.StopWords.stopWordsCount(language, s.Text())
 		if sw.wordCount < 5 && s.Find("object").Length() == 0 && s.Find("em").Length() == 0 {
 			node := s.Get(0)
 			node.Parent.RemoveChild(node)
