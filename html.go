@@ -22,6 +22,7 @@ func NewHTMLRequester(config Configuration) HTMLRequester {
 }
 
 func (hr htmlrequester) fetchHTML(url string) (string, error) {
+	// TODO set request context instead of using global config
 	client := resty.New()
 	client.SetTimeout(hr.config.Timeout)
 	resp, err := client.
@@ -29,6 +30,7 @@ func (hr htmlrequester) fetchHTML(url string) (string, error) {
 		R().
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", hr.config.BrowserUserAgent).
+		SetHeaders(hr.config.Headers).
 		Get(url)
 
 	if err != nil {
